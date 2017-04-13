@@ -1,6 +1,6 @@
 {
   "name": "reactive-magic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Magical reactivity at your fingertips",
   "main": "lib/index.js",
   "keywords": [
@@ -8,6 +8,9 @@
     "react",
     "observable",
     "stream"
+  ],
+  "files": [
+    "lib/*"
   ],
   "author": "Chet Corcos <ccorcos@gmail.com> (http://www.chetcorcos.com/)",
   "license": "MIT",
