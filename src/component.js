@@ -30,10 +30,6 @@ export default class Component extends PureComponent {
     );
   };
 
-  shouldComponentUpdate(...args) {
-    return super.shouldComponentUpdate(...args);
-  }
-
   willMount() {}
   componentWillMount() {
     this._listen(() => {
