@@ -43,6 +43,10 @@ export default class Component extends PureComponent {
     this._listen(() => this.didMount(this.props));
   }
 
+  componentWillUpdate(nextProps) {
+    this._needsUpdate = true;
+  }
+
   willUnmount() {}
   componentWillUnmount() {
     this._listeners.forEach(l => l.stop());
@@ -53,6 +57,10 @@ export default class Component extends PureComponent {
     return false;
   }
   render() {
+    if (this._needsUpdate) {
+      this._view = this.view(this.props);
+      this._needsUpdate = false;
+    }
     return this._view;
   }
 }
