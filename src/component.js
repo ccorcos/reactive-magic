@@ -43,8 +43,10 @@ export default class Component extends PureComponent {
     this._listen(() => this.didMount(this.props));
   }
 
+  willUpdate() {}
   componentWillUpdate(nextProps) {
     this._needsUpdate = true;
+    this.willUpdate(nextProps);
   }
 
   willUnmount() {}
