@@ -1,6 +1,6 @@
 {
   "name": "reactive-magic",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Magical reactivity at your fingertips",
   "main": "lib/index.js",
   "keywords": [
