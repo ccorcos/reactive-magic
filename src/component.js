@@ -20,8 +20,8 @@ export default class Component extends PureComponent {
     let first = true;
     this._listeners.push(
       Derive(() => {
-        fn();
         if (first) {
+          fn();
           first = false;
         } else {
           this._update();
