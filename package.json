@@ -3,6 +3,7 @@
   "version": "0.7.0",
   "description": "Magical reactivity at your fingertips",
   "main": "lib/index.js",
+  "typings": "lib/index.d.js",
   "keywords": [
     "reactive",
     "react",
