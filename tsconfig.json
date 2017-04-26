@@ -6,7 +6,7 @@
     "module": "es2015",
     "jsx": "preserve",
     "moduleResolution": "node",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "removeComments": true,

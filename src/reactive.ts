@@ -1,6 +1,6 @@
-import flyd from "flyd";
+import flyd, {Stream} from "flyd";
 
-let stack: any[] = [];
+let stack: Array<Array<Stream<any>>> = [];
 
 export interface ReactiveValue<V> {
   (v: V | undefined ): V;
@@ -65,7 +65,7 @@ export function Derive<V>(fn: () => V): DerivedValue<V> {
 export function Store<S>(shape: S): S {
   const obj = {}
   Object.keys(shape).forEach(key => {
-    const value = shape[key];
+    const value = (shape as any)[key];
     const $ = value && value.reactive === true ? value : Value(value);
     Object.defineProperty(obj, key, {
       get: () => $(),
