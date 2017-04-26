@@ -1,16 +1,19 @@
 import { PureComponent } from "react";
 import { Derive } from "./reactive";
 
-export default class Component extends PureComponent {
+export default class Component<P> extends PureComponent<P, {updates: number}> {
   // compute the first _view
   constructor(props) {
     super(props);
   }
 
+  private _view: any;
+  private _needsUpdate: boolean;
+
   // leverage React's render loop
   state = { updates: 0 };
   _update = () => {
-    this._view = this.view(this.props);
+    this._needsUpdate = true
     this.setState({ updates: this.state.updates + 1 });
   };
 
@@ -30,7 +33,7 @@ export default class Component extends PureComponent {
     );
   };
 
-  willMount() {}
+  willMount(props: P) {}
   componentWillMount() {
     this._listen(() => {
       this._view = this.view(this.props);
@@ -38,24 +41,24 @@ export default class Component extends PureComponent {
     this._listen(() => this.willMount(this.props));
   }
 
-  didMount() {}
+  didMount(props: P) {}
   componentDidMount() {
     this._listen(() => this.didMount(this.props));
   }
 
-  willUpdate() {}
+  willUpdate(props: P) {}
   componentWillUpdate(nextProps) {
     this._needsUpdate = true;
     this.willUpdate(nextProps);
   }
 
-  willUnmount() {}
+  willUnmount(props: P) {}
   componentWillUnmount() {
     this._listeners.forEach(l => l.stop());
     this.willUnmount(this.props);
   }
 
-  view() {
+  view(props: P): JSX.Element | null | false | undefined {
     return false;
   }
   render() {

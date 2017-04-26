@@ -1,10 +1,17 @@
 import flyd from "flyd";
 
-let stack = [];
+let stack: any[] = [];
 
-export function Value(x) {
+export interface ReactiveValue<V> {
+  (v: V | undefined ): V;
+  reactive?: true;
+  stop?(): void;
+}
+
+export function Value<V>(x: V): ReactiveValue<V> {
   const $ = flyd.stream(x);
-  function _Value(y) {
+
+  const _Value: ReactiveValue<V> = (y: V | undefined) => {
     if (y === undefined) {
       const deps = stack[0];
       deps && deps.push($);
@@ -19,7 +26,13 @@ export function Value(x) {
   return _Value;
 }
 
-export function Derive(fn) {
+export interface DerivedValue<V> {
+  (v?: undefined): V;
+  reactive?: true;
+  stop?(): void;
+}
+
+export function Derive<V>(fn: () => V): DerivedValue<V> {
   stack.push([]);
   const x = fn();
   const deps = stack.shift();
@@ -34,7 +47,7 @@ export function Derive(fn) {
     },
     deps
   );
-  function _Derive(y) {
+  const _Derive: DerivedValue<V> = (y) => {
     if (y === undefined) {
       const deps = stack[0];
       deps && deps.push($);
@@ -49,8 +62,8 @@ export function Derive(fn) {
   return _Derive;
 }
 
-export function Store(shape, self) {
-  const obj = self === undefined ? {} : self;
+export function Store<S>(shape: S): S {
+  const obj = {}
   Object.keys(shape).forEach(key => {
     const value = shape[key];
     const $ = value && value.reactive === true ? value : Value(value);
@@ -59,5 +72,5 @@ export function Store(shape, self) {
       set: x => $(x)
     });
   });
-  return obj;
+  return (obj as S);
 }
