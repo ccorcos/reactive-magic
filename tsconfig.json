@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "target": "es2016",
+    "target": "es5",
     "module": "es2015",
     "jsx": "preserve",
     "moduleResolution": "node",

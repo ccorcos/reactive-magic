@@ -3,7 +3,7 @@ import flyd, {Stream} from "flyd";
 let stack: Array<Array<Stream<any>>> = [];
 
 export interface ReactiveValue<V> {
-  (v: V | undefined ): V;
+  (v?: V ): V;
   reactive?: true;
   stop?(): void;
 }
