@@ -14,61 +14,39 @@ Let's create some reactive values:
 
 ```js
 import { Value } from 'reactive-magic'
-const x = Value(1)
-const y = Value(1)
-```
+const x = new Value(1)
+const y = new Value(1)
 
-You can get a the value of a `Value` by calling it as a function with no arguments, and you can set the value of a `Value` by passing an argument to the function.
-
-```js
-console.log(y())
+console.log(y.get())
 // => 1
-y(2)
-console.log(y())
+y.set(2)
+console.log(y.get())
 // => 2
 ```
 
-You can create a `Value` that derives from other `Value`s by passing a function to `Derive`. This function will re-evaluate anytime it's dependent `Value`s change.
+You can create a `Value` that derives from other `Value`s by passing a function to `DerivedValue`. This function will re-evaluate anytime it's dependent `Value`s change.
 
 ```js
-import { Derive } from 'reactive-magic'
-const z = Derive(() => x() + y())
-console.log(z())
+import { DerivedValue } from 'reactive-magic'
+const z = new DerivedValue(() => x.get() + y.get())
+console.log(z.get())
 // => 3
-x(10)
-console.log(z())
+x.set(10)
+console.log(z.get())
 // => 12
 ```
 
-You can also ignore the output of `Derive` if you simply want to do something as a side-effect of a some `Value`s changing:
+You can also ignore the output of `DerivedValue` if you simply want to do something as a side-effect of a some `Value`s changing:
+
 
 ```js
-Derive(() => console.log(x(), y(), z()))
+new DerivedValue(() => console.log(x.get(), y.get(), z.get()))
 // => 10 2 12
 y(3)
 // => 10 3 13
 ```
 
-Note that you cannot set the value of a derived value (a `Value` created with `Derive`).
-
-A `Store` is just some sugar around creating an object with reactive values so that you can set and get values as you normally would in JavaScript.
-
-```js
-const NumberStore = Store({ x: 1, y: 1 })
-console.log(NumberStore.x, NumberStore.y)
-// => 1 1
-
-const MathStore = Store({
-  add: Derive(() => NumberStore.x + NumberStore.y)
-  multiply: Derive(() => NumberStore.x * NumberStore.y)
-})
-console.log(MathStore.add, MathStore.multiply)
-// => 2 1
-
-NumberStore.x = 10
-console.log(MathStore.add, MathStore.multiply)
-// => 11 10
-```
+Note that you cannot set the value of a derived value (a `Value` created with `DerivedValue`).
 
 This sets us up for creating a React API that feels very magical. We can create stores and use them wherever and everything will just update seamlessly.
 
@@ -76,24 +54,24 @@ Here's how you might create a Counter component that has a local store:
 
 ```js
 import React from "react";
-import { Component, Store } from "reactive-magic"
+import { Component, Value } from "reactive-magic"
 
 export default class Counter extends Component {
-  store = Store({ count: 0 });
+  count = new Value(0)
 
   increment = () => {
-    this.store.count += 1;
+    this.count.update(count => count + 1);
   };
 
   decrement = () => {
-    this.store.count -= 1;
+    this.count.update(count => count - 1);
   };
 
   view() {
     return (
       <div>
         <button onClick={this.decrement}>{"-"}</button>
-        <span>{this.store.count}</span>
+        <span>{this.count.get()}</span>
         <button onClick={this.increment}>{"+"}</button>
       </div>
     );
@@ -105,10 +83,14 @@ The Component API has 4 functions.
 
 - `willMount(props)` is magically reactive
 - `didMount(props)` is magically reactive
+- `willUpdate(props)` is not reactive
 - `willUnmount(props)` is not reactive
 - `view(props)` is magically reactive
 
-"Magically reactive" means that those functions are run within a `Derive` context so they will be reactively re-run should any of it's dependent values change.
+"Magically reactive" means that those functions are run within a `DerivedValue` context so they will be reactively re-run should any of it's dependent values change.
+
+**Everything below this line is old**
+---
 
 These stores are very convenient for global singletons as well. If we know that we're going to need to know the user's mouse location in a bunch of places, we can create a MouseStore and write to it on `mousemove`.
 

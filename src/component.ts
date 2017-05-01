@@ -1,8 +1,7 @@
 import { PureComponent } from "react";
-import { Derive, DerivedValue} from "./reactive";
+import { DerivedValue } from "./reactive";
 
 export default class Component<P> extends PureComponent<P, {updates: number}> {
-  // compute the first _view
   constructor(props: P) {
     super(props);
   }
@@ -22,7 +21,7 @@ export default class Component<P> extends PureComponent<P, {updates: number}> {
   _listen = (fn: () => void) => {
     let first = true;
     this._listeners.push(
-      Derive(() => {
+      new DerivedValue(() => {
         fn();
         if (first) {
           first = false;
@@ -58,8 +57,8 @@ export default class Component<P> extends PureComponent<P, {updates: number}> {
     this.willUnmount(this.props);
   }
 
-  view(props: P): JSX.Element | null | false | undefined {
-    return false;
+  view(props: P): JSX.Element | null {
+    return null;
   }
   render() {
     if (this._needsUpdate) {
