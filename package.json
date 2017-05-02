@@ -20,10 +20,8 @@
     "watch": "rm -rf lib && tsc --watch"
   },
   "dependencies": {
-    "flyd": "^0.2.4"
-  },
-  "peerDependencies": {
-    "react": "^0.14.0 || ^15.0.0-0 || ^16.0.0-0"
+    "flyd": "^0.2.4",
+    "react": "^15.5.4"
   },
   "devDependencies": {
     "@types/react": "^15.0.23",
