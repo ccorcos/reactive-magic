@@ -2,22 +2,21 @@
   "name": "reactive-magic",
   "version": "1.1.0",
   "description": "Magical reactivity at your fingertips",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.js",
+  "main": "index.js",
+  "typings": "index.d.js",
   "keywords": [
     "reactive",
     "react",
     "observable",
     "stream"
   ],
-  "files": [
-    "lib/*"
-  ],
   "author": "Chet Corcos <ccorcos@gmail.com> (http://www.chetcorcos.com/)",
   "license": "MIT",
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "watch": "rm -rf lib && tsc --watch"
+    "watch": "rm -rf lib && tsc --watch",
+    "prepublish": "cp -rf package.json lib",
+    "release": "npm run build && npm run prepublish"
   },
   "dependencies": {
     "flyd": "^0.2.4",

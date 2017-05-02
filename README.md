@@ -8,6 +8,12 @@ This library has some very simply yet powerful internals that help you build com
 npm install --save reactive-magic
 ```
 
+## To Do
+
+- upgrade documentation
+- stricter Component class types?
+- output library structure
+
 ## Tutorial [[example](https://github.com/ccorcos/reactive-magic-example)]
 
 Let's create some reactive values:
