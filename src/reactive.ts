@@ -33,6 +33,9 @@ export class Value<V> implements Settable {
   update(fn: (v:V) => V): void {
     this.set(fn(this.get()))
   }
+  assign(value: Partial<V>): void {
+    this.set(Object.assign(this.get(), value))
+  }
   stop() {
     this.stream.end(true)
   }

@@ -16,7 +16,7 @@
     "build": "rm -rf lib && tsc",
     "watch": "rm -rf lib && tsc --watch",
     "prepublish": "cp -rf package.json lib",
-    "release": "npm run build && npm run prepublish"
+    "release": "npm run build && npm run prepublish && cd lib && npm publish"
   },
   "dependencies": {
     "flyd": "^0.2.4",
