@@ -63,11 +63,6 @@ export default class Component<P> extends PureComponent<P, {updates: number}> {
     this.willUnmount(this.props);
   }
 
-  didUnmount(props: P) {}
-  componentDidUnmount() {
-    this.didUnmount(this.props);
-  }
-
   view(props: P): JSX.Element | null {
     return null;
   }

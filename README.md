@@ -92,7 +92,6 @@ The Component API has 4 functions.
 - `willUpdate(props)`
 - `didUpdate(props)`
 - `willUnmount(props)`
-- `didUnmount(props)`
 - `view(props)`
 
 **Everything below this line is old**
