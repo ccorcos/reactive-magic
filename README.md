@@ -87,13 +87,13 @@ export default class Counter extends Component {
 
 The Component API has 4 functions.
 
-- `willMount(props)` is magically reactive
-- `didMount(props)` is magically reactive
-- `willUpdate(props)` is not reactive
-- `willUnmount(props)` is not reactive
-- `view(props)` is magically reactive
-
-"Magically reactive" means that those functions are run within a `DerivedValue` context so they will be reactively re-run should any of it's dependent values change.
+- `willMount(props)`
+- `didMount(props)`
+- `willUpdate(props)`
+- `didUpdate(props)`
+- `willUnmount(props)`
+- `didUnmount(props)`
+- `view(props)`
 
 **Everything below this line is old**
 ---

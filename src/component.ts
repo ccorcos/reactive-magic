@@ -18,7 +18,7 @@ export default class Component<P> extends PureComponent<P, {updates: number}> {
 
   // listen for reactive updates
   _listeners : Array<DerivedValue<any>>  = [];
-  _listen = (fn: () => void) => {
+  autorun = (fn: () => void) => {
     let first = true;
     this._listeners.push(
       new DerivedValue(() => {
@@ -34,15 +34,15 @@ export default class Component<P> extends PureComponent<P, {updates: number}> {
 
   willMount(props: P) {}
   componentWillMount() {
-    this._listen(() => {
+    this.willMount(this.props);
+    this.autorun(() => {
       this._view = this.view(this.props);
     });
-    this._listen(() => this.willMount(this.props));
   }
 
   didMount(props: P) {}
   componentDidMount() {
-    this._listen(() => this.didMount(this.props));
+    this.didMount(this.props);
   }
 
   willUpdate(props: P) {}
@@ -51,10 +51,21 @@ export default class Component<P> extends PureComponent<P, {updates: number}> {
     this.willUpdate(nextProps);
   }
 
+  didUpdate(props: P) {}
+  componentDidUpdate() {
+    this._needsUpdate = true;
+    this.didUpdate(this.props);
+  }
+
   willUnmount(props: P) {}
   componentWillUnmount() {
     this._listeners.forEach(l => l.stop());
     this.willUnmount(this.props);
+  }
+
+  didUnmount(props: P) {}
+  componentDidUnmount() {
+    this.didUnmount(this.props);
   }
 
   view(props: P): JSX.Element | null {
