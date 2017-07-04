@@ -1,6 +1,6 @@
 {
   "name": "reactive-magic",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Magical reactivity at your fingertips",
   "main": "index.js",
   "typings": "index.d.js",
@@ -15,15 +15,15 @@
   "scripts": {
     "build": "rm -rf lib && tsc",
     "watch": "rm -rf lib && tsc --watch",
-    "prepublish": "cp -rf package.json lib",
-    "release": "npm run build && npm run prepublish && cd lib && npm publish"
+    "prerelease": "cp -rf package.json lib",
+    "release": "npm run build && npm run prerelease && cd lib && npm publish"
   },
   "dependencies": {
     "flyd": "^0.2.4",
     "react": "^15.5.4"
   },
   "devDependencies": {
-    "@types/react": "^15.0.23",
-    "typescript": "^2.2.1"
+    "@types/react": "^15.0.34",
+    "typescript": "^2.4.1"
   }
 }
