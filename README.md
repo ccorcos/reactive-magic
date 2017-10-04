@@ -1,18 +1,12 @@
 # ✨ Reactive Magic ✨
 
-A simple library for building reactive applications. Inspired by [Meteor's Tracker](https://docs.meteor.com/api/tracker.html) and built on top of the incredibly lightweight observable streams library, [Flyd](https://github.com/paldepind/flyd).
+A simple library for building reactive applications. Inspired by [Meteor's Tracker](https://docs.meteor.com/api/tracker.html) and [Flyd](https://github.com/paldepind/flyd).
 
 This library has some very simply yet powerful internals that help you build complex applications quickly.
 
 ```sh
 npm install --save reactive-magic
 ```
-
-## To Do
-
-- upgrade documentation
-- stricter Component class types?
-- output library structure
 
 ## Tutorial [[example](https://github.com/ccorcos/reactive-magic-example)]
 
@@ -93,47 +87,3 @@ The Component API has 4 functions.
 - `didUpdate(props)`
 - `willUnmount(props)`
 - `view(props)`
-
-**Everything below this line is old**
----
-
-These stores are very convenient for global singletons as well. If we know that we're going to need to know the user's mouse location in a bunch of places, we can create a MouseStore and write to it on `mousemove`.
-
-
-```js
-import { Store } from "reactive-magic";
-
-const MouseStore = Store({ x: 0, y: 0 });
-
-document.addEventListener("mousemove", function(event) {
-  MouseStore.x = event.clientX;
-  MouseStore.y = event.clientY;
-});
-```
-
-If we have a component that wants to use this mouse information, we can just use it and everything will magically work!
-
-```js
-import React from "react";
-import { Component } from "reactive-magic";
-
-const r = 10;
-
-class Ball extends Component {
-  getStyle() {
-    return {
-      position: "absolute",
-      top: MouseStore.y - r,
-      left: MouseStore.x - r,
-      width: r * 2,
-      height: r * 2,
-      borderRadius: r,
-      backgroundColor: "blue",
-      pointerEvents: "none"
-    };
-  }
-  view() {
-    return <div style={this.getStyle()} />;
-  }
-}
-```

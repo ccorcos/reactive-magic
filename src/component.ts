@@ -1,39 +1,17 @@
 import { PureComponent } from "react"
 import { DerivedValue } from "./reactive"
 
-export default class Component<P> extends PureComponent<
-	P,
-	{ updates: number }
-> {
+export default class Component<P> extends PureComponent<P> {
+	_view: DerivedValue<JSX.Element | null>
 	constructor(props: P) {
 		super(props)
+		this._view = new DerivedValue(() => this.view(this.props))
+		this._view.dependency.add(this.forceUpdate)
 	}
-
-	private _view: any
-	private _needsUpdate: boolean
-
-	// leverage React's render loop
-	state = { updates: 0 }
-	_update = () => {
-		this.setState({ updates: this.state.updates + 1 })
-	}
-
-	// listen for reactive updates
-	_listener: DerivedValue<void>
 
 	willMount(props: P) {}
 	componentWillMount() {
 		this.willMount(this.props)
-		let first = true
-		this._listener = new DerivedValue(() => {
-			this._view = this.view(this.props)
-			this._needsUpdate = false
-			if (first) {
-				first = false
-			} else {
-				this._update()
-			}
-		})
 	}
 
 	didMount(props: P) {}
@@ -42,10 +20,8 @@ export default class Component<P> extends PureComponent<
 	}
 
 	willUpdate(props: P) {}
-	componentWillUpdate(nextProps: P, nextState: { updates: number }) {
-		if (nextState.updates === this.state.updates) {
-			this._needsUpdate = true
-		}
+	componentWillUpdate(nextProps: P) {
+		this._view.stale = true
 		this.willUpdate(nextProps)
 	}
 
@@ -56,18 +32,16 @@ export default class Component<P> extends PureComponent<
 
 	willUnmount(props: P) {}
 	componentWillUnmount() {
-		this._listener.stop()
 		this.willUnmount(this.props)
+		this._view.stop()
+		this._view.dependency.delete(this.forceUpdate)
 	}
 
 	view(props: P): JSX.Element | null {
 		return null
 	}
+
 	render() {
-		if (this._needsUpdate) {
-			this._view = this.view(this.props)
-			this._needsUpdate = false
-		}
-		return this._view
+		return this._view.get()
 	}
 }

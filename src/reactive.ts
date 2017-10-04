@@ -1,34 +1,44 @@
-import flyd, { Stream } from "flyd"
-
-export interface Stoppable {
-	stop(): void
-}
-
-export interface Gettable<V> extends Stoppable {
+export interface Gettable<V> {
 	get(): V
 }
 
-export interface Settable<V> extends Gettable<V>, Stoppable {
+export interface Settable<V> extends Gettable<V> {
 	set(v: V): void
-	update(fn: (v: V) => V): void
 }
 
-// A stack of streams that are being used by the current computation
-const stack: Array<Set<Stream<any>>> = []
+// Basic event emitter
+export class Dependency {
+	private listeners: Set<() => void> = new Set()
+	add(listener: () => void) {
+		this.listeners.add(listener)
+	}
+	delete(listener: () => void) {
+		this.listeners.delete(listener)
+	}
+	update() {
+		this.listeners.forEach(listener => listener())
+	}
+}
 
-// A wrapper around a stream that pushes the stream to the stack when it's used
+// A stack of dependencies that are being used by the current computation
+const computations: Array<Set<Dependency>> = []
+
+// Pushes the dependency to the stack when it's used
 export class Value<V> implements Settable<V> {
-	private stream: Stream<V>
+	private value: V
+	private dependency: Dependency
 	constructor(value: V) {
-		this.stream = flyd.stream(value)
+		this.value = value
+		this.dependency = new Dependency()
 	}
 	get(): V {
-		const deps = stack[0]
-		deps && deps.add(this.stream)
-		return this.stream()
+		const computation = computations[0]
+		computation && computation.add(this.dependency)
+		return this.value
 	}
 	set(value: V): void {
-		this.stream(value)
+		this.value = value
+		this.dependency.update()
 	}
 	update(fn: (v: V) => V): void {
 		this.set(fn(this.get()))
@@ -36,47 +46,44 @@ export class Value<V> implements Settable<V> {
 	assign(value: Partial<V>): void {
 		this.set(Object.assign(this.get(), value))
 	}
-	stop() {
-		this.stream.end(true)
-	}
 }
 
 // A value that is derrived from other values
 export class DerivedValue<V> implements Gettable<V> {
-	private stream: Stream<V>
+	private value: V
+	dependency: Dependency
+	private computation: Set<Dependency>
 	private fn: () => V
+	stale = true
 	constructor(fn: () => V) {
 		this.fn = fn
-		this.rerun(this.run(), true)
 	}
 	run() {
-		stack.push(new Set())
-		const value = this.fn()
-		const deps = stack.shift()
-		return { deps, value }
+		computations.push(new Set())
+		this.value = this.fn()
+		const computation = computations.shift()
+		this.stop()
+		computation.forEach(dep => dep.add(this.onUpdate))
+		this.computation = computation
 	}
-	rerun({ deps, value }: { deps: Set<Stream<any>>; value: V }, first: boolean) {
-		this.stream = flyd.combine(() => {
-			if (first) {
-				first = false
-				return value
-			} else {
-				const next = this.run()
-				if (!equal(next.deps, deps)) {
-					this.stop()
-					this.rerun(next, false)
-				}
-				return next.value
-			}
-		}, Array.from(deps))
+	onUpdate = () => {
+		this.stale = true
+		this.dependency.update()
+	}
+	flush() {
+		if (this.stale) {
+			this.stale = false
+			this.run()
+		}
 	}
 	get(): V {
-		const deps = stack[0]
-		deps && deps.add(this.stream)
-		return this.stream()
+		this.flush()
+		const deps = computations[0]
+		deps && deps.add(this.dependency)
+		return this.value
 	}
 	stop() {
-		this.stream.end(true)
+		this.computation.forEach(dep => dep.delete(this.onUpdate))
 	}
 }
 
@@ -96,9 +103,6 @@ export class Constraint<V> implements Settable<V> {
 	}
 	update(fn: (v: V) => V): void {
 		this.set(fn(this.get()))
-	}
-	stop() {
-		this.value.stop()
 	}
 }
 
