@@ -6,7 +6,7 @@ export interface Settable<V> extends Gettable<V> {
 	set(v: V): void
 }
 
-// Basic event emitter
+// Basic event emitter to keep track of dependencies
 export class Dependency {
 	private listeners: Set<() => void> = new Set()
 	add(listener: () => void) {
@@ -15,21 +15,20 @@ export class Dependency {
 	delete(listener: () => void) {
 		this.listeners.delete(listener)
 	}
-	update() {
+	emit() {
 		this.listeners.forEach(listener => listener())
 	}
 }
 
-// A stack of dependencies that are being used by the current computation
+// A stack of dependencies that represent every .get() during a computation
 const computations: Array<Set<Dependency>> = []
 
-// Pushes the dependency to the stack when it's used
+// Adds its dependency to the currrent computation on .get() and emits on .set()
 export class Value<V> implements Settable<V> {
 	private value: V
-	private dependency: Dependency
+	private dependency = new Dependency()
 	constructor(value: V) {
 		this.value = value
-		this.dependency = new Dependency()
 	}
 	get(): V {
 		const computation = computations[0]
@@ -38,7 +37,7 @@ export class Value<V> implements Settable<V> {
 	}
 	set(value: V): void {
 		this.value = value
-		this.dependency.update()
+		this.dependency.emit()
 	}
 	update(fn: (v: V) => V): void {
 		this.set(fn(this.get()))
@@ -51,8 +50,8 @@ export class Value<V> implements Settable<V> {
 // A value that is derrived from other values
 export class DerivedValue<V> implements Gettable<V> {
 	private value: V
-	dependency: Dependency
-	private computation: Set<Dependency>
+	dependency = new Dependency()
+	private computation = new Set<Dependency>()
 	private fn: () => V
 	stale = true
 	constructor(fn: () => V) {
@@ -68,7 +67,7 @@ export class DerivedValue<V> implements Gettable<V> {
 	}
 	onUpdate = () => {
 		this.stale = true
-		this.dependency.update()
+		this.dependency.emit()
 	}
 	flush() {
 		if (this.stale) {

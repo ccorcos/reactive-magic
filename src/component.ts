@@ -3,10 +3,11 @@ import { DerivedValue } from "./reactive"
 
 export default class Component<P> extends PureComponent<P> {
 	_view: DerivedValue<JSX.Element | null>
+
 	constructor(props: P) {
 		super(props)
 		this._view = new DerivedValue(() => this.view(this.props))
-		this._view.dependency.add(this.forceUpdate)
+		this._view.dependency.add(this._update)
 	}
 
 	willMount(props: P) {}
@@ -34,7 +35,18 @@ export default class Component<P> extends PureComponent<P> {
 	componentWillUnmount() {
 		this.willUnmount(this.props)
 		this._view.stop()
-		this._view.dependency.delete(this.forceUpdate)
+		this._view.dependency.delete(this._update)
+	}
+
+	_updating = false
+	_update = () => {
+		if (!this._updating) {
+			this._updating = true
+			setTimeout(() => {
+				this.forceUpdate()
+				this._updating = false
+			})
+		}
 	}
 
 	view(props: P): JSX.Element | null {
