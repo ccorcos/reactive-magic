@@ -1,6 +1,6 @@
 {
 	"name": "reactive-magic",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"description": "Magical reactivity at your fingertips",
 	"main": "index.js",
 	"typings": "index.d.js",
@@ -18,10 +18,10 @@
 		"release": "npm run build && cd lib && npm publish"
 	},
 	"dependencies": {
-		"react": "^16.0.0"
+		"react": "^16.2.0"
 	},
 	"devDependencies": {
-		"@types/react": "^16.0.9",
-		"typescript": "^2.5.3"
+		"@types/react": "^16.0.27",
+		"typescript": "^2.6.2"
 	}
 }

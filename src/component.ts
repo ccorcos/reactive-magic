@@ -2,7 +2,7 @@ import { PureComponent } from "react"
 import { DerivedValue } from "./reactive"
 
 export default class Component<P> extends PureComponent<P> {
-	_view: DerivedValue<JSX.Element | null>
+	_view: DerivedValue<React.ReactNode>
 
 	constructor(props: P) {
 		super(props)
@@ -49,11 +49,11 @@ export default class Component<P> extends PureComponent<P> {
 		}
 	}
 
-	view(props: P): JSX.Element | null {
+	view(props: P): React.ReactNode {
 		return null
 	}
 
-	render() {
+	render(): React.ReactNode {
 		return this._view.get()
 	}
 }
