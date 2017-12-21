@@ -8,7 +8,7 @@ export interface Settable<V> extends Gettable<V> {
 
 // Basic event emitter to keep track of dependencies
 export class Dependency {
-	protected listeners: Set<() => void> = new Set()
+	listeners: Set<() => void> = new Set()
 	add(listener: () => void) {
 		this.listeners.add(listener)
 	}
@@ -25,8 +25,8 @@ const computations: Array<Set<Dependency>> = []
 
 // Adds its dependency to the currrent computation on .get() and emits on .set()
 export class Value<V> implements Settable<V> {
-	protected value: V
-	protected dependency = new Dependency()
+	value: V
+	dependency = new Dependency()
 	constructor(value: V) {
 		this.value = value
 	}
@@ -46,10 +46,10 @@ export class Value<V> implements Settable<V> {
 
 // A value that is derrived from other values
 export class DerivedValue<V> implements Gettable<V> {
-	protected value: V
+	value: V
 	dependency = new Dependency()
-	protected computation = new Set<Dependency>()
-	protected fn: () => V
+	computation = new Set<Dependency>()
+	fn: () => V
 	stale = true
 	constructor(fn: () => V) {
 		this.fn = fn
@@ -85,8 +85,8 @@ export class DerivedValue<V> implements Gettable<V> {
 
 // A reactive constraint by providing inverse functions
 export class Constraint<V> implements Settable<V> {
-	protected value: DerivedValue<V>
-	protected setter: (v: V) => void
+	value: DerivedValue<V>
+	setter: (v: V) => void
 	constructor({ get, set }: { get: () => V; set: (v: V) => void }) {
 		this.value = new DerivedValue(get)
 		this.setter = set
