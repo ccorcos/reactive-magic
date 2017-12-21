@@ -42,9 +42,6 @@ export class Value<V> implements Settable<V> {
 	update(fn: (v: V) => V): void {
 		this.set(fn(this.get()))
 	}
-	assign(value: Partial<V>): void {
-		this.set(Object.assign(this.get(), value))
-	}
 }
 
 // A value that is derrived from other values
