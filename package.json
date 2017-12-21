@@ -1,6 +1,6 @@
 {
 	"name": "reactive-magic",
-	"version": "2.1.3",
+	"version": "2.1.4",
 	"description": "Magical reactivity at your fingertips",
 	"main": "index.js",
 	"typings": "index.d.js",
