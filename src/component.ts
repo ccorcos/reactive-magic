@@ -1,7 +1,7 @@
 import { PureComponent } from "react"
 import { DerivedValue } from "./reactive"
 
-export default class Component<P> extends PureComponent<P> {
+export default class Component<P = {}> extends PureComponent<P> {
 	_view: DerivedValue<React.ReactNode>
 
 	constructor(props: P) {
